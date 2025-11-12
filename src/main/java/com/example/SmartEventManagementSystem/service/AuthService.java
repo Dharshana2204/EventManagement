@@ -39,9 +39,9 @@ public class AuthService {
             return new ApiResponse("Error", "Username is required");
         }
 
-        if (userRepository.existsByName(name)) {
-            return new ApiResponse("Error", "Username already exists");
-        }
+//        if (userRepository.existsByName(name)) {
+//            return new ApiResponse("Error", "Username already exists");
+//        }
 
         // Validate email - must match regex and not exist in DB
         if (email.isEmpty()) {

@@ -6,6 +6,7 @@ import com.example.SmartEventManagementSystem.dto.RegisterRequest;
 import com.example.SmartEventManagementSystem.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest request) {
         ApiResponse response = authService.login(request);
+        if(!response.isSuccess()){
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST).body(response);
+        }
         return ResponseEntity.ok(response);
     }
 }

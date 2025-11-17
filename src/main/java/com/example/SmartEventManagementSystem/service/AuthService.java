@@ -60,7 +60,7 @@ public class AuthService {
 
     public ApiResponse register(RegisterRequest request) {
 
-        String name = request.getName().trim();
+        String name = request.getName();
         String email = request.getEmail().trim();
         String password = request.getPassword().trim();
         String phone = request.getPhoneNumber().trim();

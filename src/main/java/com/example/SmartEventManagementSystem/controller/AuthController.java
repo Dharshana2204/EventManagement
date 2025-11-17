@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200/")
 public class AuthController {
 
     @Autowired
@@ -27,10 +27,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest request) {
         ApiResponse response = authService.login(request);
-        if(!response.isSuccess()){
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST).body(response);
+
+        if (!response.getStatus().equalsIgnoreCase("Success")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+
         return ResponseEntity.ok(response);
     }
 }

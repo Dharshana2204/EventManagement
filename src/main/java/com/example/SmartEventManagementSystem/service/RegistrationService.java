@@ -30,47 +30,47 @@ public class RegistrationService {
     private MeetupRepository meetupRepository;
 
     public ApiResponse registerForEvent(RegistrationRequest request) {
-        // Trim fields
+
         String username = request.getUsername() != null ? request.getUsername().trim() : "";
         String eventType = request.getEventType() != null ? request.getEventType().trim().toLowerCase() : "";
         Long eventId = request.getEventId();
 
-        // Validate inputs
+        // -------- Validation --------
         if (username.isEmpty()) {
-            return new ApiResponse("Error", "Username is required");
+            return new ApiResponse("Error", "Username is required", null, null);
         }
 
         if (eventId == null) {
-            return new ApiResponse("Error", "Event ID is required");
+            return new ApiResponse("Error", "Event ID is required", null, null);
         }
 
         if (eventType.isEmpty()) {
-            return new ApiResponse("Error", "Event type is required");
+            return new ApiResponse("Error", "Event type is required", null, null);
         }
 
         if (!eventType.equals("event") && !eventType.equals("meetup")) {
-            return new ApiResponse("Error", "Event type must be 'event' or 'meetup'");
+            return new ApiResponse("Error", "Event type must be 'event' or 'meetup'", null, null);
         }
 
-        // Check if user already registered for this event
+        // Check if already registered
         if (registrationRepository.existsByUsernameAndEventIdAndEventType(username, eventId, eventType)) {
-            return new ApiResponse("Error", "Already registered");
+            return new ApiResponse("Error", "Already registered", null, null);
         }
 
-        // Verify that the event/meetup exists
+        // Check event existence
         if (eventType.equals("event")) {
             Optional<Event> event = eventRepository.findById(eventId);
             if (event.isEmpty()) {
-                return new ApiResponse("Error", "Event not found");
+                return new ApiResponse("Error", "Event not found", null, null);
             }
         } else {
             Optional<Meetup> meetup = meetupRepository.findById(eventId);
             if (meetup.isEmpty()) {
-                return new ApiResponse("Error", "Meetup not found");
+                return new ApiResponse("Error", "Meetup not found", null, null);
             }
         }
 
-        // Create registration
+        // -------- Save Registration --------
         Registration registration = new Registration();
         registration.setUsername(username);
         registration.setEventId(eventId);
@@ -79,10 +79,13 @@ public class RegistrationService {
 
         registrationRepository.save(registration);
 
-        return new ApiResponse("Success", "Registration successful");
+        return new ApiResponse("Success", "Registration successful", null, null);
     }
 
+
+    // ----- Fetch all registered events for a user -----
     public List<UserEventResponse> getUserRegisteredEvents(String username) {
+
         List<UserEventResponse> userEvents = new ArrayList<>();
 
         if (username == null || username.trim().isEmpty()) {
@@ -91,12 +94,12 @@ public class RegistrationService {
 
         username = username.trim();
 
-        // Get all registrations for the user
         List<Registration> registrations = registrationRepository.findByUsername(username);
 
         for (Registration registration : registrations) {
+
             if (registration.getEventType().equals("event")) {
-                // Fetch event details
+
                 Optional<Event> eventOpt = eventRepository.findById(registration.getEventId());
                 if (eventOpt.isPresent()) {
                     Event event = eventOpt.get();
@@ -110,8 +113,9 @@ public class RegistrationService {
                             event.getIsTrending()
                     ));
                 }
+
             } else if (registration.getEventType().equals("meetup")) {
-                // Fetch meetup details
+
                 Optional<Meetup> meetupOpt = meetupRepository.findById(registration.getEventId());
                 if (meetupOpt.isPresent()) {
                     Meetup meetup = meetupOpt.get();
@@ -131,4 +135,3 @@ public class RegistrationService {
         return userEvents;
     }
 }
-

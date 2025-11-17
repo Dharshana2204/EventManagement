@@ -20,105 +20,97 @@ public class AuthService {
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
-    // Password must contain: at least one capital letter, one small letter, one special char, one number
-    private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+    private static final String PASSWORD_REGEX =
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
 
     private static final String PHONE_REGEX = "^\\d{10}$";
     private static final Pattern PHONE_PATTERN = Pattern.compile(PHONE_REGEX);
 
+    // ------------------ REGISTER ---------------------
     public ApiResponse register(RegisterRequest request) {
-        // Trim all fields
+
         String name = request.getName() != null ? request.getName().trim() : "";
         String email = request.getEmail() != null ? request.getEmail().trim() : "";
         String password = request.getPassword() != null ? request.getPassword().trim() : "";
         String phoneNumber = request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : "";
 
-        // Validate username (name) - must be unique and not empty
         if (name.isEmpty()) {
-            return new ApiResponse("Error", "Username is required");
+            return new ApiResponse("Error", "Username is required", null, null);
         }
 
-//        if (userRepository.existsByName(name)) {
-//            return new ApiResponse("Error", "Username already exists");
-//        }
-
-        // Validate email - must match regex and not exist in DB
         if (email.isEmpty()) {
-            return new ApiResponse("Error", "Email is required");
+            return new ApiResponse("Error", "Email is required", null, null);
         }
 
         if (!EMAIL_PATTERN.matcher(email).matches()) {
-            return new ApiResponse("Error", "Email format is invalid");
+            return new ApiResponse("Error", "Email format is invalid", null, null);
         }
 
         if (userRepository.existsByEmail(email)) {
-            return new ApiResponse("Error", "Email already exists");
+            return new ApiResponse("Error", "Email already exists", null, null);
         }
 
-        // Validate phone number - must be exactly 10 digits
         if (phoneNumber.isEmpty()) {
-            return new ApiResponse("Error", "Phone number is required");
+            return new ApiResponse("Error", "Phone number is required", null, null);
         }
 
         if (!PHONE_PATTERN.matcher(phoneNumber).matches()) {
-            return new ApiResponse("Error", "Phone number must be exactly 10 digits");
+            return new ApiResponse("Error", "Phone number must be exactly 10 digits", null, null);
         }
 
-        // Validate password - must contain one capital letter, one small letter, one special char, one number
         if (password.isEmpty()) {
-            return new ApiResponse("Error", "Password is required");
+            return new ApiResponse("Error", "Password is required", null, null);
         }
 
         if (!PASSWORD_PATTERN.matcher(password).matches()) {
-            return new ApiResponse("Error", "Password must contain at least one capital letter, one small letter, one special character, and one number");
+            return new ApiResponse("Error",
+                    "Password must contain at least one capital letter, one small letter, one number, and one special character",
+                    null, null);
         }
 
-        // All validations passed, create user
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setPassword(password); // In production, use password encoding (BCrypt)
+        user.setPassword(password);
         user.setPhoneNumber(phoneNumber);
 
         userRepository.save(user);
 
-        return new ApiResponse("Success", "User created successfully");
+        return new ApiResponse("Success", "User created successfully", name, email);
     }
 
+
+    // ------------------ LOGIN ---------------------
     public ApiResponse login(LoginRequest request) {
-        // Trim fields
+
         String email = request.getEmail() != null ? request.getEmail().trim() : "";
         String password = request.getPassword() != null ? request.getPassword().trim() : "";
 
-        // Validate email format
         if (email.isEmpty()) {
-            return new ApiResponse("Error", "Email is required");
+            return new ApiResponse("Error", "Email is required", null, null);
         }
 
         if (!EMAIL_PATTERN.matcher(email).matches()) {
-            return new ApiResponse("Error", "Email format is invalid");
+            return new ApiResponse("Error", "Email format is invalid", null, null);
         }
 
-        // Validate password
         if (password.isEmpty()) {
-            return new ApiResponse("Error", "Password is required");
+            return new ApiResponse("Error", "Password is required", null, null);
         }
 
-        // Find user by email
         Optional<User> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isEmpty()) {
-            return new ApiResponse("Error", "Invalid email or password");
+            return new ApiResponse("Error", "Invalid email or password", null, null);
         }
 
         User user = userOptional.get();
 
-        // Check if password matches
         if (!user.getPassword().equals(password)) {
-            return new ApiResponse("Error", "Invalid email or password");
+            return new ApiResponse("Error", "Invalid email or password", null, null);
         }
 
-        return new ApiResponse("Success", "Login successful", user.getName());
+        return new ApiResponse("Success", "Login successful", user.getName(), user.getEmail());
     }
 }

@@ -1,18 +1,3 @@
-//package com.example.SmartEventManagementSystem.dto;
-//
-//import lombok.AllArgsConstructor;
-//import lombok.Data;
-//import lombok.NoArgsConstructor;
-//
-//@Data
-//@AllArgsConstructor
-//@NoArgsConstructor
-//public class ApiResponse {
-//    private String status;
-//    private String message;
-//    private String name;
-//    private String email;
-//}
 package com.example.SmartEventManagementSystem.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -39,14 +24,15 @@ public class ApiResponse {
         this.message = message;
 
     }
-    public ApiResponse(String status, String message,Object data,String token) {
+
+    public ApiResponse(String status, String message, Object data, String token) {
         this.status = status;
         this.message = message;
-        this.data=data;
-        this.token=token;
+        this.data = data;
+        this.token = token;
     }
 
     public boolean isSuccess() {
-        return  "Success".equalsIgnoreCase(this.status);
+        return "Success".equalsIgnoreCase(this.status);
     }
 }

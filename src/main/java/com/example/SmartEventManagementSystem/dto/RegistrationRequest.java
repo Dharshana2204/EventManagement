@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class RegistrationRequest {
     private String username;
     private Long eventId;
-    private String eventType; // "event" or "meetup"
+    private String eventType;
 }
 

@@ -35,7 +35,6 @@ public class RegistrationService {
         String eventType = request.getEventType() != null ? request.getEventType().trim().toLowerCase() : "";
         Long eventId = request.getEventId();
 
-        // -------- Validation --------
         if (username.isEmpty()) {
             return new ApiResponse("Error", "Username is required", null, null);
         }
@@ -52,12 +51,11 @@ public class RegistrationService {
             return new ApiResponse("Error", "Event type must be 'event' or 'meetup'", null, null);
         }
 
-        // Check if already registered
         if (registrationRepository.existsByUsernameAndEventIdAndEventType(username, eventId, eventType)) {
             return new ApiResponse("Error", "Already registered", null, null);
         }
 
-        // Check event existence
+
         if (eventType.equals("event")) {
             Optional<Event> event = eventRepository.findById(eventId);
             if (event.isEmpty()) {
@@ -70,7 +68,6 @@ public class RegistrationService {
             }
         }
 
-        // -------- Save Registration --------
         Registration registration = new Registration();
         registration.setUsername(username);
         registration.setEventId(eventId);
@@ -83,7 +80,6 @@ public class RegistrationService {
     }
 
 
-    // ----- Fetch all registered events for a user -----
     public List<UserEventResponse> getUserRegisteredEvents(String username) {
 
         List<UserEventResponse> userEvents = new ArrayList<>();

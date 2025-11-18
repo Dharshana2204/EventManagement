@@ -11,27 +11,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
+    private final Logger logger = LoggerFactory.getLogger(EmailService.class);
     @Autowired
     private JavaMailSender mailSender;
-
-    private final Logger logger = LoggerFactory.getLogger(EmailService.class);
-
     @Value("${spring.mail.username:no-reply@example.com}")
     private String fromEmail;
 
     public void sendLoginEmail(String toEmail, String name) {
 
-        // 🔥 FIX 1 — Prevent crash (Null check)
         if (toEmail == null || toEmail.trim().isEmpty()) {
-            logger.error("❌ EmailService: toEmail is NULL/EMPTY. Skipping sending email.");
-            return; // Prevent crash
+            logger.error("EmailService: toEmail is NULL/EMPTY. Skipping sending email.");
+            return;
         }
 
         try {
             SimpleMailMessage message = new SimpleMailMessage();
 
-            message.setFrom(fromEmail); // uses your Gmail automatically
-            message.setTo(toEmail.trim()); // prevent null crash
+            message.setFrom(fromEmail);
+            message.setTo(toEmail.trim());
             message.setSubject("Login Successful");
 
             String safeName = (name == null ? "" : name);
@@ -43,10 +40,10 @@ public class EmailService {
             );
 
             mailSender.send(message);
-            logger.info("📧 Login email sent successfully to {}", toEmail);
+            logger.info("Login email sent successfully to {}", toEmail);
 
         } catch (Exception e) {
-            logger.error("❌ Failed to send login email: {}", e.getMessage());
+            logger.error(" Failed to send login email: {}", e.getMessage());
         }
     }
 }

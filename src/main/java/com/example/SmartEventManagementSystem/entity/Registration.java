@@ -28,6 +28,6 @@ public class Registration {
     private Long eventId;
 
     @Column(nullable = false)
-    private String eventType; // "event" or "meetup"
+    private String eventType;
 }
 

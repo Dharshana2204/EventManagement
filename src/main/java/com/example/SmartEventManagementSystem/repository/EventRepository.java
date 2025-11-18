@@ -9,7 +9,6 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    // Find all events ordered by isTrending (true first), then by id
     List<Event> findAllByOrderByIsTrendingDescIdAsc();
 }
 

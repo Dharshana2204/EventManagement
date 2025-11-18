@@ -9,10 +9,10 @@ import java.util.List;
 @Repository
 public interface RegistrationRepository extends JpaRepository<Registration, Long> {
 
-    // Check if user already registered for a specific event
+
     boolean existsByUsernameAndEventIdAndEventType(String username, Long eventId, String eventType);
 
-    // Find all registrations for a specific user
+
     List<Registration> findByUsername(String username);
 }
 

@@ -5,7 +5,6 @@ import com.example.SmartEventManagementSystem.dto.LoginRequest;
 import com.example.SmartEventManagementSystem.dto.RegisterRequest;
 import com.example.SmartEventManagementSystem.service.AuthService;
 import com.example.SmartEventManagementSystem.service.EmailService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,6 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
-    // -------------------- REGISTER --------------------
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest request) {
         ApiResponse response = authService.register(request);
@@ -34,7 +32,6 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    // -------------------- LOGIN --------------------
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest request) {
 
@@ -42,13 +39,12 @@ public class AuthController {
 
         if ("Success".equalsIgnoreCase(response.getStatus())) {
 
-            // 🔥 FIXED: Only send email if email exists
             if (response.getEmail() != null && !response.getEmail().trim().isEmpty()) {
 
                 try {
                     emailService.sendLoginEmail(response.getEmail(), response.getName());
                 } catch (Exception e) {
-                    System.out.println("❌ Error sending login email: " + e.getMessage());
+                    System.out.println("Error sending login email: " + e.getMessage());
                 }
             }
         }

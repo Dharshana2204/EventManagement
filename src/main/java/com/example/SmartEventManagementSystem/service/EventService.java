@@ -17,10 +17,8 @@ public class EventService {
     private EventRepository eventRepository;
 
     public List<EventResponse> getAllEvents() {
-        // Fetch all events ordered by trending first
         List<Event> events = eventRepository.findAllByOrderByIsTrendingDescIdAsc();
 
-        // Convert to DTO
         return events.stream()
                 .map(event -> new EventResponse(
                         event.getId(),
@@ -35,10 +33,8 @@ public class EventService {
     }
 
     public List<TopEventResponse> getTopThreeEvents() {
-        // Fetch all events ordered by trending first
         List<Event> events = eventRepository.findAllByOrderByIsTrendingDescIdAsc();
 
-        // Get first 3 events and convert to TopEventResponse
         return events.stream()
                 .limit(3)
                 .map(event -> new TopEventResponse(

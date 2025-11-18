@@ -16,26 +16,19 @@ import java.util.regex.Pattern;
 @Service
 public class AuthService {
 
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    private static final Pattern PHONE_PATTERN =
+            Pattern.compile("^[0-9]{10}$");
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$");
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     @Autowired
     private JwtUtil jwtUtil;
 
-    private static final Pattern EMAIL_PATTERN =
-            Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
-
-    private static final Pattern PHONE_PATTERN =
-            Pattern.compile("^[0-9]{10}$");
-
-    private static final Pattern PASSWORD_PATTERN =
-            Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$");
-
-
-    // ---------------- REGISTER ----------------
     public ApiResponse register(RegisterRequest request) {
 
         String name = request.getName() != null ? request.getName() : "";
@@ -82,8 +75,6 @@ public class AuthService {
         return new ApiResponse("Success", "User registered successfully");
     }
 
-
-    // ---------------- LOGIN ----------------
     public ApiResponse login(LoginRequest request) {
 
         String email = request.getEmail() != null ? request.getEmail().trim() : "";
@@ -108,10 +99,8 @@ public class AuthService {
         if (!passwordEncoder.matches(password, user.getPassword()))
             return new ApiResponse("Error", "Invalid email or password");
 
-        // Generate JWT token
         String token = jwtUtil.generateToken(user.getEmail());
 
-        // Return full correct response
         ApiResponse response = new ApiResponse();
         response.setStatus("Success");
         response.setMessage("Login successful");

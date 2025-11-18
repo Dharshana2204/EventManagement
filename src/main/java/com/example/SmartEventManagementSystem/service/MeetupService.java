@@ -16,10 +16,9 @@ public class MeetupService {
     private MeetupRepository meetupRepository;
 
     public List<MeetupResponse> getAllMeetups() {
-        // Fetch all meetups ordered by trending first
         List<Meetup> meetups = meetupRepository.findAllByOrderByIsTrendingDescIdAsc();
 
-        // Convert to DTO
+
         return meetups.stream()
                 .map(meetup -> new MeetupResponse(
                         meetup.getId(),
